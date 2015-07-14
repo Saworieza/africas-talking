@@ -1,0 +1,2 @@
+class AfricasTalking::AfricasTalkingGatewayError
+end
