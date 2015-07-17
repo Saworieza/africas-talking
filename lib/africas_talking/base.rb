@@ -1,7 +1,14 @@
 class AfricasTalking::Base
 
-  API_KEY='api_key'
 	BASE_URI='https://api.africastalking.com'
+
+  DEFAULTS={
+    sms_url: '/version1/messaging',
+    subscription_url: '/version1/subscription',
+    userdata_url: '/version1/user',
+    airtime_url: '/version1/airtime',
+    voice_url: 'https://voice.africastalking.com'
+  }
 
 	def post(url, body=nil)
 		Typhoeus.post("#{BASE_URI}#{url}", body: body, headers: headers)
@@ -13,7 +20,7 @@ class AfricasTalking::Base
 
 	def parse_api_errors(response)
     reports = parse_api_response(response)["SMSMessageData"]["Recipients"]
-    reports.collect { |entry| 
+    reports.collect { |entry|
                        AfricasTalking::StatusReport.new(entry["number"], entry["status"], entry["cost"]) }
   end
 
