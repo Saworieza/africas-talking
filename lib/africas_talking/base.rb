@@ -26,8 +26,7 @@ class AfricasTalking::Base
 
   def build_messages_array(response)
   	parsed_response = parse_api_response(response)["SMSMessageData"]["Messages"]
-    parsed_response.collect { |msg| AfricasTalking::SMSMessage.new(
-                               msg["id"], msg["text"], msg["from"] , msg["to"], msg["linkId"], msg["date"])}
+    parsed_response.collect { |msg| AfricasTalking::SMSMessage.new(msg["id"], msg["text"], msg["from"] , msg["to"], msg["linkId"], msg["date"])}
   end
 
   def parse_api_response(response)
