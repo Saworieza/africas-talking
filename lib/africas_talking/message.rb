@@ -22,11 +22,12 @@ class AfricasTalking::Message < AfricasTalking::Base
   #####incase it doesn't go through. It is optional --> retryDurationInHours = "No of hours to retry"
   #####opts={sender: nil, bulk: 1, retry: nil, enqueue: 0, keyword: nil, linkId: nil}
   #####
+  ####ENV['africas_talking_username']
   def deliver(recipients, message, opts={})
     symbolized_opts = opts.symbolize_keys!
 
     body = {
-      username: ENV['africas_talking_username'], 
+      username: 'username', 
       message: message, to: recipients, from: symbolized_opts.fetch(:sender, 'nil'),
       bulkSMSMode: symbolized_opts.fetch(:bulk, 1), enqueue: symbolized_opts.fetch(:enqueue, 0), 
       keyword: symbolized_opts.fetch(:keyword, 'nil'), linkId: symbolized_opts.fetch(:linkId), 
@@ -46,7 +47,7 @@ class AfricasTalking::Message < AfricasTalking::Base
   # time you access the gateway, and the ID of the last message we sent you
   # on subsequent results
   def fetch_messages(last_received_id=0)
-  	response = post("?username=#{ENV['africas_talking_username']}&lastReceivedId=#{last_received_id}")
+  	response = post("?username=username&lastReceivedId=#{last_received_id}")
 
   	return build_messages_array(response) if response.options[:response_code] == 200
   	raise api_error_messages(response)
