@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/chalchuck/africas-talking.svg?branch=master)](https://travis-ci.org/chalchuck/africas-talking)
+[![Dependecy Status](https://gemnasium.com/chalchuck/africas-talking.svg?branch=master)](https://gemnasium.com/chalchuck/africas-talking)
+[![Code Climate](https://codeclimate.com/github/chalchuck/africas-talking.svg?branch=master)](https://codeclimate.com/github/chalchuck/africas-talking)
 
 #Setup.
 
