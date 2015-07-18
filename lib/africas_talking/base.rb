@@ -37,9 +37,8 @@ class AfricasTalking::Base
   	AfricasTalking::AfricasTalkingGatewayError, parse_api_response(response)["SMSMessageData"]["Message"]
   end
 
-  # ENV['africas_talking_apikey']
   def headers
-    {'Accept' => "application/json", 'apiKey'=> 'apikey'}
+    {'Accept' => "application/json", 'apiKey'=> ENV['africas_talking_apikey']}
   end
 
 end

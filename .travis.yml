@@ -4,4 +4,11 @@ rvm:
   - 2.1.1
   - 2.1.0
   - 2.0.0
+env:
+  - africas_talking_apikey="aDax7clbar5yaaAfS1Gqvw"
+  - africas_talking_username="5yaaAfS"
+global:
+  - BASE_URI='https://api.africastalking.com'
+  - URLS sms_url='/version1/messaging' subscription_url='/version1/subscription' userdata_url='/version1/user' airtime_url='/version1/airtime' voice_url='https://voice.africastalking.com'
+
 # script: bundle exec rspec spec
