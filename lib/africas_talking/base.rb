@@ -1,9 +1,7 @@
 class AfricasTalking::Base
 
 	BASE_URI='https://api.africastalking.com'
-
   URLS={
-    sms_url: '/version1/messaging',
     subscription_url: '/version1/subscription',
     userdata_url: '/version1/user',
     airtime_url: '/version1/airtime',

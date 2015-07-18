@@ -23,20 +23,9 @@ class AfricasTalking::Message < AfricasTalking::Base
   #####opts={sender: nil, bulk: 1, retry: nil, enqueue: 0, keyword: nil, linkId: nil}
   #####
   def deliver(recipients, message, opts={})
-    symbolized_opts = opts.symbolize_keys!
-
-    body = {
-      username: ENV['africas_talking_username'], 
-      message: message, to: recipients, from: symbolized_opts.fetch(:sender, 'nil'),
-      bulkSMSMode: symbolized_opts.fetch(:bulk, 1), enqueue: symbolized_opts.fetch(:enqueue, 0), 
-      keyword: symbolized_opts.fetch(:keyword, 'nil'), linkId: symbolized_opts.fetch(:linkId), 
-      retryDurationInHours: symbolized_opts.fetch(:retry_duration, 'nil')}
-
-    response = post(AfricasTalking::Base::URLS.fetch(:sms_url), body: body)
-    
-    return parse_api_response(response) if response.options[:response_code] == 200
-    return parse_api_errors(response) if response.options[:response_code] == 201
-    raise api_error_messages(response)
+    body = build_message_body(recipients, opts)
+    response = post('/version1/messaging', body: body)
+    process_api_response(response)
   end
 
   #POST
@@ -45,11 +34,31 @@ class AfricasTalking::Message < AfricasTalking::Base
   # what you currently believe is the lastReceivedId. Specify 0 for the first
   # time you access the gateway, and the ID of the last message we sent you
   # on subsequent results
+  ###############################################################################
   def fetch_messages(last_received_id=0)
   	response = post("?username=#{ENV['africas_talking_username']}&lastReceivedId=#{last_received_id}")
-
   	return build_messages_array(response) if response.options[:response_code] == 200
   	raise api_error_messages(response)
+  end
+
+private
+  
+  def build_message_body(recipients, opts)
+    @symbolized_opts = opts.symbolize_keys!
+
+    {
+      username: ENV['africas_talking_username'], 
+      message: message, to: recipients, from: @symbolized_opts.fetch(:sender, 'nil'),
+      bulkSMSMode: @symbolized_opts.fetch(:bulk, 1), enqueue: @symbolized_opts.fetch(:enqueue, 0), 
+      keyword: @symbolized_opts.fetch(:keyword, 'nil'), linkId: @symbolized_opts.fetch(:linkId), 
+      retryDurationInHours: @symbolized_opts.fetch(:retry_duration, 'nil')
+    }
+  end
+
+  def process_api_response(response)
+    return parse_api_response(response) if response.options[:response_code] == 200
+    return parse_api_errors(response) if response.options[:response_code] == 201
+    raise api_error_messages(response)
   end
 
 end
