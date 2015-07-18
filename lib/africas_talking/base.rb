@@ -2,7 +2,7 @@ class AfricasTalking::Base
 
 	BASE_URI='https://api.africastalking.com'
 
-  DEFAULTS={
+  URLS={
     sms_url: '/version1/messaging',
     subscription_url: '/version1/subscription',
     userdata_url: '/version1/user',
@@ -25,10 +25,9 @@ class AfricasTalking::Base
   end
 
   def build_messages_array(response)
-  	parse_api_response(response)["SMSMessageData"]["Messages"].collect { |msg|
-  			AfricasTalking::SMSMessage.new(
-  				msg["id"], msg["text"], msg["from"] , msg["to"], msg["linkId"], msg["date"])
-  		}
+  	parsed_response = parse_api_response(response)["SMSMessageData"]["Messages"]
+    parsed_response.collect { |msg| AfricasTalking::SMSMessage.new(
+                               msg["id"], msg["text"], msg["from"] , msg["to"], msg["linkId"], msg["date"])}
   end
 
   def parse_api_response(response)

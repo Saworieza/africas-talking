@@ -1,6 +1,12 @@
-# AfricasTalking
+#Setup.
 
-TODO: Write a gem description
+#Obtain a Username and API KEY
+
+	Go to Africas Talking website. (https://account.africastalking.com/register)
+	In the sidebar on the left, select Settings > Api Key
+	If you haven't generated your key already, generate a new api key credentials by clicking Generate My Api Key
+
+Take note of the API KEY and Username as you'll need to add it to your code later
 
 ## Installation
 
@@ -17,7 +23,7 @@ Or install it yourself as:
     $ gem install africas_talking
 
 ## Usage
-
+#Sending a message
 
 
 ## Contributing
