@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/chalchuck/africas-talking.svg?branch=master)](https://travis-ci.org/chalchuck/africas-talking)
+
 #Setup.
 
 #Obtain a Username and API KEY
