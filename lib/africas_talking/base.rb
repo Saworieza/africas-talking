@@ -1,15 +1,15 @@
 class AfricasTalking::Base
 
 	BASE_URI='https://api.africastalking.com'
-  URLS={
-    subscription_url: '/version1/subscription',
-    userdata_url: '/version1/user',
-    airtime_url: '/version1/airtime',
-    voice_url: 'https://voice.africastalking.com'
-  }
 
-	def post(url, body=nil)
-		Typhoeus.post("#{BASE_URI}#{url}", body: body, headers: headers)
+  def prepare_recipients(recipients)
+    recipients_array = []
+    recipients.split(',').each { |recip| recipients_array << recip.strip.gsub(/^0/,'254') }
+    recipients_array.join(', ')
+  end
+
+	def post(url, json_body=nil)
+		Typhoeus.post("#{BASE_URI}#{url}", body: json_body, headers: headers)
 	end
 
 	def get(url)
@@ -32,11 +32,11 @@ class AfricasTalking::Base
   end
 
   def api_error_messages(response)
-  	AfricasTalking::AfricasTalkingGatewayError, parse_api_response(response)["SMSMessageData"]["Message"]
+  	AfricasTalking::AfricasTalkingGatewayError#, parse_api_response(response)["SMSMessageData"]["Message"]
   end
 
   def headers
-    {'Accept' => "application/json", 'apiKey'=> ENV['africas_talking_apikey']}
+    {'Accept' => "application/json", 'apiKey'=> 'c6ec656ed9bceb689289ccaa6e38d7f6c1b0718a1237b4c13391d1efc1108bfb'}
   end
 
 end

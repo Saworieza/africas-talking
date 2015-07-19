@@ -2,58 +2,90 @@ class AfricasTalking::Message < AfricasTalking::Base
 	
 	#POST
 	#/version1/messaging
-  ##Sending a message
-  ##2. recipients: 'this are the numbers that you want to send, 
-  ################if the recipients are more than one, use a comma to separate them eg: [0711XXXYYY,0733YYYZZZ]'
-	##3. message: `This is the message you want to send to your recipients`
-  ################send with sender_id or shortcode parameter#########
-  #### build an opts hash and pass in sender option as follows: ``opts={sender: 'shortCode or senderId'}
-  ###############enqueue messages######################################
-  #####to enqueue a message, an enqueue flag is added to the opts: {} hash as shown: opts: {enqueue: 1} 
-  ##############premium messages#######################################
-  #####to send a premium message:
-  ##1. Specify your premium shortCode and keyword --> shortCode="XXXXX"
-  ##2. Set keyword as None where not used (Mostly for onDemand services) ---> keyword="premiumKeyword"
-  ##3. Set the bulkSMSMode flag to 0 so that the subscriber gets charged --> bulkSMSMode=0
-  ##4. Set the enqueue flag to 0 so that your message will not be queued or to 1 for many messages --> enqueue=0
-  ##5. Incase of an onDemand service, specify the link id. else set it to nil
-  #####linkId is received from the message sent by subscriber to your onDemand service --> linkId="messageLinkId"
-  ##6. Specify retryDurationInHours: The numbers of hours our API should retry to send the message
-  #####incase it doesn't go through. It is optional --> retryDurationInHours = "No of hours to retry"
-  #####opts={sender: nil, bulk: 1, retry: nil, enqueue: 0, keyword: nil, linkId: nil}
-  #####
-  def deliver(recipients, message, opts={})
-    body = build_message_body(recipients, opts)
-    response = post('/version1/messaging', body: body)
+  #----------------------------------------------------------------------------
+  # Specify the numbers that you want to send to in a comma-separated list
+  # Please ensure you include the country code (+254 for Kenya in this case)
+  # to      = "+254711XXXYYY,+254733YYYZZZ";
+  # And of course we want our recipients to know what we really do
+  def deliver(recipients, message)
+    response = post('/version1/messaging', {username: "zurepay", message: message, to: prepare_recipients(recipients)})
     process_api_response(response)
   end
 
   #POST
+  #/version1/messaging
+  #----------------------------------------------------------------------------
+  # Specify your AfricasTalking shortCode or sender id
+  # sender = "shortCode or senderId"
+
+  def deliver_with_shortcode(recipients, message, from)
+    response = post('/version1/messaging', {username: 'zurepay', message: message, to: recipients, from: from})
+    process_api_response(response)
+  end
+
+  #POST
+  #/version1/messaging
+  #----------------------------------------------------------------------------
+  # sender = nil # 
+  # bulkSMSMode   # This should always be 1 for bulk messages
+  # # enqueue flag is used to queue messages incase you are sending a high volume.
+  # # The default value is 0.
+  # opts={enqueue: 1, bulkSMSMode: 1, sender: "shortCode/senderId"}
+  # gateway = AfricasTalkingGateway.new(username, apikey)
+  # reports = gateway.sendMessage(to, message, sender, bulkSMSMode, enqueue)
+
+  def enqueue_messages(opts)
+    body={
+        to: opts.fetch(:recipients), 
+        message: opts.fetch(:message), 
+        sender: opts.fetch(:sender, nil),
+        enqueue: opts.fetch(:enqueue,1),
+        bulkSMSMode: opts.fetch(:bulkSMSMode, 1)}
+
+    response = post('/version1/messaging', body)
+    process_api_response(response)
+  end
+
+  #POST
+  #/version1/messaging#premium_messages
+  #----------------------------------------------------------------------------
+  #
+  #########Required fields to deliver a premium message through the API########
+  #############################################################################
+  # To send a premium message, build a HASH (as shown below) with the following attributes keeping in mind the defaults.
+  # 1.Specify your premium shortCode and keyword
+  # 2.Set keyword as None where not used (Mostly for onDemand services)
+  # 3.Set the bulkSMSMode flag to 0 so that the subscriber gets charged 
+  # 4.Set the enqueue flag to 0 so that your message will not be queued or to 1 for many messages
+  # 5.Incase of an onDemand service, specify the link id. else set it to nil
+  # 6.linkId is received from the message sent by subscriber to your onDemand service
+  # 7.Specify retryDurationInHours: The numbers of hours our API should retry to send the message incase it doesn't go through.
+  #   opts={bulkSMSMode: 0, shortCode:"XXXXX", enqueue: 0, keyword=nil, linkId="messageLinkId" or nil}
+  #
+  def deliver_premium_messages(opts)
+    body={
+        recipients: opts.fetch(:recipients),
+        message: opts.fetch(:message),
+        keyword: opts.fetch(:keyword, nil),
+        enqueue: opts.fetch(:enqueue, 0),
+        linkId: opts.fetch(:linkId, nil),
+        retryDurationInHours: opts.fetch(:retryDurationInHours, 1)}
+
+    response = post('/version1/messaging', body)
+    process_api_response(response)
+  end
+
+
+  #POST
   #/?username=#{ENV['africas_talking_username']}&lastReceivedId=#{last_received_id}
-  # The gateway will return 10 messages at a time back to you, starting with
-  # what you currently believe is the lastReceivedId. Specify 0 for the first
-  # time you access the gateway, and the ID of the last message we sent you
-  # on subsequent results
-  ###############################################################################
+
   def fetch_messages(last_received_id=0)
-  	response = post("?username=#{ENV['africas_talking_username']}&lastReceivedId=#{last_received_id}")
+  	response = post("?username=zurepay&lastReceivedId=#{last_received_id}")
   	return build_messages_array(response) if response.options[:response_code] == 200
   	raise api_error_messages(response)
   end
 
 private
-  
-  def build_message_body(recipients, opts)
-    @symbolized_opts = opts.symbolize_keys!
-
-    {
-      username: ENV['africas_talking_username'], 
-      message: message, to: recipients, from: @symbolized_opts.fetch(:sender, 'nil'),
-      bulkSMSMode: @symbolized_opts.fetch(:bulk, 1), enqueue: @symbolized_opts.fetch(:enqueue, 0), 
-      keyword: @symbolized_opts.fetch(:keyword, 'nil'), linkId: @symbolized_opts.fetch(:linkId), 
-      retryDurationInHours: @symbolized_opts.fetch(:retry_duration, 'nil')
-    }
-  end
 
   def process_api_response(response)
     return parse_api_response(response) if response.options[:response_code] == 200

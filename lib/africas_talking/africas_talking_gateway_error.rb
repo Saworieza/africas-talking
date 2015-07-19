@@ -1,2 +1,2 @@
-class AfricasTalking::AfricasTalkingGatewayError
+class AfricasTalking::AfricasTalkingGatewayError < Exception
 end
