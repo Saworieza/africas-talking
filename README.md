@@ -54,8 +54,23 @@ Obtain a Client ID and Secret
 ```ruby
 	AfricasTalking::Message.new.deliver_with_shortcode(recipients, message, from, username)
 ```
-	###Specify your AfricasTalking shortCode or sender id
-		sender = "shortCode or senderId"
+	Specify your AfricasTalking shortCode or sender id, sender = "shortCode or senderId"
+
+###Enqueue messages
+```ruby
+	AfricasTalking::Message.new.enqueue_messages(options)
+```
+Enqueue flag is used to queue messages incase you are sending a high volume.
+
+sender = nil # sender = "shortCode or sender id"
+bulkSMSMode = 1 # This should always be 1 for bulk messages
+The default value for enqueue is 0.
+
+So as to send/enqueue a message, build a hash with the following options: 
+	{recipients: "", message: "", sender: "", enqueue: "", bulkSMSMode: "", username: ""}
+
+
+
 
 
 ## Contributing
