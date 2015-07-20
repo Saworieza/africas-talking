@@ -7,8 +7,8 @@ class AfricasTalking::Message < AfricasTalking::Base
   # Please ensure you include the country code (+254 for Kenya in this case)
   # to      = "+254711XXXYYY,+254733YYYZZZ";
   # And of course we want our recipients to know what we really do
-  def deliver(recipients, message)
-    response = post('/version1/messaging', {username: "zurepay", message: message, to: prepare_recipients(recipients)})
+  def deliver(recipients, message, username)
+    response = post('/version1/messaging', {username: username, message: message, to: prepare_recipients(recipients)})
     process_api_response(response)
   end
 

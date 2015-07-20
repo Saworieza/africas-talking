@@ -17,7 +17,7 @@ protected
 	end
 
 	def setup_mock_client
-		client = mock('Farady::Response')
+		# client = mock('Farady::Response')
 		client.stubs(:finish).returns('')
 		client.stubs(:status).returns(200)
 		client.stubs(:headers).returns({"Accept"=>"application/json"})

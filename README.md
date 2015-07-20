@@ -1,6 +1,6 @@
 #Africas Talking.
-	A fast lightweight and minimalist wrapper around the Africas Talking api
-	---
+A fast lightweight and minimalist wrapper around the Africas Talking api
+
 
 [![Build Status](https://travis-ci.org/chalchuck/africas-talking.svg?branch=master)](https://travis-ci.org/chalchuck/africas-talking)
 [![Dependency Status](https://gemnasium.com/chalchuck/africas-talking.svg)](https://gemnasium.com/chalchuck/africas-talking)
@@ -23,16 +23,23 @@ Or install it yourself as:
 
 
 ##Setup
+
+Obtain a Client ID and Secret
 ---
-	Obtain a Client ID and Secret
-	---
-	1. Go to Africas Talking website. (https://account.africastalking.com/register)
-	2. In the sidebar on the left, select Settings > Api Key
-	3. If you haven't generated your key already, generate a new api key credentials by clicking Generate My Api Key
+1. Go to Africas Talking website. (https://account.africastalking.com/register)
+2. In the sidebar on the left, select Settings > Api Key
+3. If you haven't generated your key already, generate a new api key credentials by clicking Generate My Api Key
 
 
 ## Usage
 ###Sending a message
+	AfricasTalking::Message.new.deliver("recipients", "message", "username")
+recipients: This are the numbers that you want to send to, if you want to send to many people delimit the numbers using commas(',')
+						"0700000000, 0710000000, 0720000000"
+message: This is the message content
+         A message is by default 160 characters, but if your message is 161-320 it will be sent as two messages and so on
+username: This is your username on AfricasTalking.com [If you do not have one signup and use it to send messages]
+	
 
 
 ## Contributing
