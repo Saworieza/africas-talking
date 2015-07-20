@@ -36,12 +36,8 @@ class AfricasTalking::Message < AfricasTalking::Base
 
   def enqueue_messages(opts)
     body={
-        to: opts.fetch(:recipients), 
-        message: opts.fetch(:message), 
-        sender: opts.fetch(:sender, nil),
-        enqueue: opts.fetch(:enqueue,1),
-        bulkSMSMode: opts.fetch(:bulkSMSMode, 1)}
-
+      to: opts.fetch(:recipients), message: opts.fetch(:message, ""), sender: opts.fetch(:sender, nil),
+      enqueue: opts.fetch(:enqueue,1), bulkSMSMode: opts.fetch(:bulkSMSMode, 1), username: opts.fetch(:username)}
     response = post('/version1/messaging', body)
     process_api_response(response)
   end
@@ -60,27 +56,27 @@ class AfricasTalking::Message < AfricasTalking::Base
   # 5.Incase of an onDemand service, specify the link id. else set it to nil
   # 6.linkId is received from the message sent by subscriber to your onDemand service
   # 7.Specify retryDurationInHours: The numbers of hours our API should retry to send the message incase it doesn't go through.
-  #   opts={bulkSMSMode: 0, shortCode:"XXXXX", enqueue: 0, keyword=nil, linkId="messageLinkId" or nil}
-  #
+    # opts={recipients: "0710335602", message: "Hey there testing something awesome", bulkSMSMode: 0, shortCode:"XXXXX", enqueue: 0, keyword: nil, linkId: "messageLinkId"}
+  
   def deliver_premium_messages(opts)
     body={
-        recipients: opts.fetch(:recipients),
-        message: opts.fetch(:message),
-        keyword: opts.fetch(:keyword, nil),
-        enqueue: opts.fetch(:enqueue, 0),
-        linkId: opts.fetch(:linkId, nil),
-        retryDurationInHours: opts.fetch(:retryDurationInHours, 1)}
-
+        to: opts.fetch(:recipients), message: opts.fetch(:message),
+        keyword: opts.fetch(:keyword, nil), enqueue: opts.fetch(:enqueue, 0), username: opts.fetch(:username),
+        linkId: opts.fetch(:linkId, nil), retryDurationInHours: opts.fetch(:retryDurationInHours, 1)}
     response = post('/version1/messaging', body)
     process_api_response(response)
   end
 
 
-  #POST
+  #GET
   #/?username=#{ENV['africas_talking_username']}&lastReceivedId=#{last_received_id}
+  # The gateway will return 10 messages at a time back to you, starting with
+  # what you currently believe is the lastReceivedId. Specify 0 for the first
+  # time you access the gateway, and the ID of the last message we sent you
+  # on subsequent results
 
-  def fetch_messages(last_received_id=0)
-  	response = post("?username=zurepay&lastReceivedId=#{last_received_id}")
+  def fetch_messages(username, last_received_id=0)
+  	response = get("/version1/messaging?username=#{username}&lastReceivedId=#{last_received_id}")
   	return build_messages_array(response) if response.options[:response_code] == 200
   	raise api_error_messages(response)
   end

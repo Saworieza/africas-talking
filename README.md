@@ -1,17 +1,11 @@
+#Africas Talking.
+	A fast lightweight and minimalist wrapper around the Africas Talking api
+	---
+
 [![Build Status](https://travis-ci.org/chalchuck/africas-talking.svg?branch=master)](https://travis-ci.org/chalchuck/africas-talking)
 [![Dependency Status](https://gemnasium.com/chalchuck/africas-talking.svg)](https://gemnasium.com/chalchuck/africas-talking)
 [![Code Climate](https://codeclimate.com/github/chalchuck/africas-talking/badges/gpa.svg)](https://codeclimate.com/github/chalchuck/africas-talking)
 [![Test Coverage](https://codeclimate.com/github/chalchuck/africas-talking/badges/coverage.svg)](https://codeclimate.com/github/chalchuck/africas-talking/coverage)
-
-#Setup.
-
-#Obtain a Username and API KEY
-
-	Go to Africas Talking website. (https://account.africastalking.com/register)
-	In the sidebar on the left, select Settings > Api Key
-	If you haven't generated your key already, generate a new api key credentials by clicking Generate My Api Key
-
-Take note of the API KEY and Username as you'll need to add it to your code later
 
 ## Installation
 
@@ -27,8 +21,18 @@ Or install it yourself as:
 
     $ gem install africas_talking
 
+
+##Setup
+---
+	Obtain a Client ID and Secret
+	---
+	1. Go to Africas Talking website. (https://account.africastalking.com/register)
+	2. In the sidebar on the left, select Settings > Api Key
+	3. If you haven't generated your key already, generate a new api key credentials by clicking Generate My Api Key
+
+
 ## Usage
-#Sending a message
+###Sending a message
 
 
 ## Contributing

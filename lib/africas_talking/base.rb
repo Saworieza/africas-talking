@@ -18,8 +18,8 @@ class AfricasTalking::Base
 
 	def parse_api_errors(response)
     reports = parse_api_response(response)["SMSMessageData"]["Recipients"]
-    reports.collect { |entry|
-                       AfricasTalking::StatusReport.new(entry["number"], entry["status"], entry["cost"]) }
+    return reports.collect {|entry| AfricasTalking::StatusReport.new(entry["number"], entry["status"], entry["cost"])}
+    # return parsed_api_errors
   end
 
   def build_messages_array(response)
