@@ -34,17 +34,28 @@ Obtain a Client ID and Secret
 ## Usage
 ###Sending a message
 ```ruby
-	AfricasTalking::Message.new.deliver("recipients", "message", "username")
+	AfricasTalking::Message.new.deliver(recipients, message, username)
 ```
 	recipients:
-		This are the numbers that you want to send to, if you want to send to many people delimit the numbers using commas(',') for example: "0700000000, 0710000000, 0720000000"
+		This are the numbers that you want to send to, 
+		If you want to send to many people delimit the numbers using commas(',') 
+		for example: "0700000000, 0710000000, 0720000000"
 
 	message:
-		This is the message content, a message is by default 160 characters, but if your message is 161-320 it will be sent as two messages and so on
+		This is the message content 
+		A message is by default 160 characters
+		If your message is 161-320 it will be sent as two messages and so on
 
 	username:
-		This is your username on AfricasTalking.com [If you do not have one signup and use it to send messages]
+		This is your username on AfricasTalking.com 
+		[If you do not have one signup and use it to send messages]
 		
+###Sending message using sender id or shortcode parameter
+```ruby
+	AfricasTalking::Message.new.deliver_with_shortcode(recipients, message, from, username)
+```
+	###Specify your AfricasTalking shortCode or sender id
+		sender = "shortCode or senderId"
 
 
 ## Contributing

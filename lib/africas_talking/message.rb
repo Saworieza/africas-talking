@@ -18,8 +18,8 @@ class AfricasTalking::Message < AfricasTalking::Base
   # Specify your AfricasTalking shortCode or sender id
   # sender = "shortCode or senderId"
 
-  def deliver_with_shortcode(recipients, message, from)
-    response = post('/version1/messaging', {username: 'zurepay', message: message, to: recipients, from: from})
+  def deliver_with_shortcode(recipients, message, from, username)
+    response = post('/version1/messaging', {username: username, message: message, to: recipients, from: from})
     process_api_response(response)
   end
 
