@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Charles Chuck"]
   spec.email         = ["chalcchuck@gmail.com"]
   spec.summary       = %q{Africa's Talking ruby API wrapper.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.description   = %q{Africa's Talking ruby API wrapper.}
   spec.homepage      = "https://bitbucket.org/chalchuck/africas-talking"
   spec.license       = "MIT"
 
