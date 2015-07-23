@@ -9,12 +9,14 @@ class AfricasTalking::Base
   end
 
 	def post(url, json_body=nil)
-		Typhoeus.post("#{BASE_URI}#{url}", body: json_body, headers: headers)
-	end
+    response = Typhoeus.post("#{BASE_URI}#{url}", body: json_body, headers: headers)
+    process_api_response(response)
+  end
 
-	def get(url)
-		Typhoeus.post("#{BASE_URI}#{url}", headers: headers)
-	end
+  def get(url)
+    response = Typhoeus.post("#{BASE_URI}#{url}", headers: headers)
+    response.options[:response_code] == 200 ? build_messages_array(response) : api_error_messages(response)
+  end
 
 	def parse_api_errors(response)
     reports = parse_api_response(response)["SMSMessageData"]["Recipients"]
@@ -37,6 +39,12 @@ class AfricasTalking::Base
 
   def headers
     {'Accept' => "application/json", 'apiKey'=> 'c6ec656ed9bceb689289ccaa6e38d7f6c1b0718a1237b4c13391d1efc1108bfb'}
+  end
+
+  def process_api_response(response)
+    return parse_api_response(response) if response.options[:response_code] == 200
+    return parse_api_errors(response) if response.options[:response_code] == 201
+    raise api_error_messages(response)
   end
 
 end
