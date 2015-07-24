@@ -1,11 +1,11 @@
 class AfricasTalking::Base
 
-  attr_accessor :username, :apikey, :base_url
+  BASE_URI = 'https://api.africastalking.com'
+  attr_accessor :username, :apikey
 
-  def initialize(username, apikey, base_url: 'https://api.africastalking.com')
+  def initialize(username, apikey)
     @username = username
     @apikey = apikey
-    @base_url = base_url
   end
 
   def prepare_recipients(recipients)
@@ -15,12 +15,12 @@ class AfricasTalking::Base
   end
 
   def post(url, body=nil)
-    response = Typhoeus.post("#{base_url}#{url}", body: body, headers: headers)
+    response = Typhoeus.post("#{BASE_URI}#{url}", body: body, headers: headers)
     process_api_response(response)
   end
 
   def get(url)
-    response = Typhoeus.post("#{base_url}#{url}", headers: headers)
+    response = Typhoeus.post("#{BASE_URI}#{url}", headers: headers)
     response.options[:response_code].eql?(200) ? build_messages_array(response) : api_error_messages(response)
   end
 
