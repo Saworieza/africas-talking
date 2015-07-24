@@ -4,26 +4,28 @@ class AfricasTalking::Message < AfricasTalking::Base
 	#/version1/messaging
   #----------------------------------------------------------------------------
   # Specify the numbers that you want to send to in a comma-separated list
-  # Please ensure you include the country code (+254 for Kenya in this case)
   # to      = "+254711XXXYYY,+254733YYYZZZ";
-  # And of course we want our recipients to know what we really do
-  def deliver(recipients, message, username)
+  # message = And of course we want our recipients to know what we really do
+
+  def deliver(recipients, message)
     post('/version1/messaging', {username: username, message: message, to: prepare_recipients(recipients)})
   end
 
   #POST
-  #/version1/messaging
+  #/version1/messaging#deliver_with_shortcode
   #----------------------------------------------------------------------------
+  #
   # Specify your AfricasTalking shortCode or sender id
   # sender = "shortCode or senderId"
 
-  def deliver_with_shortcode(recipients, message, from, username)
-    post('/version1/messaging', {username: username, message: message, to: recipients, from: from})
+  def deliver_with_shortcode(recipients, message, sender)
+    post('/version1/messaging', {username: username, message: message, to: prepare_recipients(opts.fetch(:recipients)), from: sender})
   end
 
   #POST
-  #/version1/messaging
+  #/version1/messaging#enqueue_messages
   #----------------------------------------------------------------------------
+  #
   # sender = nil #
   # bulkSMSMode   # This should always be 1 for bulk messages
   # # enqueue flag is used to queue messages incase you are sending a high volume.
@@ -34,8 +36,8 @@ class AfricasTalking::Message < AfricasTalking::Base
 
   def enqueue_messages(opts)
     post('/version1/messaging', {
-      to: opts.fetch(:recipients), message: opts.fetch(:message, ""), sender: opts.fetch(:sender, nil),
-      enqueue: opts.fetch(:enqueue,1), bulkSMSMode: opts.fetch(:bulkSMSMode, 1), username: opts.fetch(:username)})
+      to: prepare_recipients(opts.fetch(:recipients)), message: opts.fetch(:message, ""), sender: opts.fetch(:sender, nil),
+      enqueue: opts.fetch(:enqueue,1), bulkSMSMode: opts.fetch(:bulkSMSMode, 1)})
   end
 
   #POST
@@ -52,23 +54,23 @@ class AfricasTalking::Message < AfricasTalking::Base
   # 5.Incase of an onDemand service, specify the link id. else set it to nil
   # 6.linkId is received from the message sent by subscriber to your onDemand service
   # 7.Specify retryDurationInHours: The numbers of hours our API should retry to send the message incase it doesn't go through.
-  # opts={recipients: "0710335602", message: "Hey there testing something awesome", bulkSMSMode: 0, shortCode:"XXXXX", enqueue: 0, keyword: nil, linkId: "messageLinkId"}
+  # opts={recipients: "0710XXTYYY", message: "Hey there testing something awesome", bulkSMSMode: 0, shortCode:"XXXXX", enqueue: 0, keyword: nil, linkId: "messageLinkId"}
 
   def deliver_premium_messages(opts)
     post('/version1/messaging', {
-        to: opts.fetch(:recipients), message: opts.fetch(:message),
-        keyword: opts.fetch(:keyword, nil), enqueue: opts.fetch(:enqueue, 0), username: opts.fetch(:username),
+        to: prepare_recipients(opts.fetch(:recipients)), message: opts.fetch(:message),
+        keyword: opts.fetch(:keyword, nil), enqueue: opts.fetch(:enqueue, 0),
         linkId: opts.fetch(:linkId, nil), retryDurationInHours: opts.fetch(:retryDurationInHours, 1)})
   end
 
   #GET
-  #/?username=#{ENV['africas_talking_username']}&lastReceivedId=#{last_received_id}
+  #/?username=#{username}&lastReceivedId=#{last_received_id}
   # The gateway will return 10 messages at a time back to you, starting with
   # what you currently believe is the lastReceivedId. Specify 0 for the first
   # time you access the gateway, and the ID of the last message we sent you
   # on subsequent results
-  #
-  def fetch_messages(username, last_received_id=0)
+
+  def fetch_messages(last_received_id=0)
   	get("/version1/messaging?username=#{username}&lastReceivedId=#{last_received_id}")
   end
 

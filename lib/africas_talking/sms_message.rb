@@ -1,5 +1,5 @@
 class AfricasTalking::SmsMessage
-	
+
 	attr_accessor :id, :text, :from, :to, :linkId, :date
 
   def initialize(id, text, from, to, linkId, date)
@@ -10,5 +10,5 @@ class AfricasTalking::SmsMessage
     @linkId = linkId
     @date = date
   end
-	
+
 end
