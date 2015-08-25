@@ -1,4 +1,4 @@
-class AfricasTalking::AfricasTalkingGatewayError < Exception
+class AfricasTalking::GatewayErrors
 
 	attr_accessor :error
 

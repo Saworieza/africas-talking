@@ -10,13 +10,14 @@ class AfricasTalking::Base
 
   def prepare_recipients(recipients)
     recipients_array = []
-    recipients.split(',').each { |r| recipients_array << r.strip.gsub(/^0/,'+254') }
+    recipients.split(',').each { |r| recipients_array << format_mobile(r) }
     recipients_array.join(', ')
   end
 
   def post(url, body=nil)
     response = Typhoeus.post("#{BASE_URI}#{url}", body: body, headers: headers)
-    process_api_response(response)
+    # process_api_response(response)
+    JSON.parse(response.body)
   end
 
   def get(url)
@@ -33,10 +34,6 @@ class AfricasTalking::Base
     JSON.parse(response.body)
   end
 
-  def headers
-    {'Accept' => "application/json", 'apiKey' => apikey}
-  end
-
   def process_api_response(response)
     return parse_api_response(response) if response.options[:response_code].eql?(200)
     return parse_status_reports(response) if response.options[:response_code].eql?(201)
@@ -50,6 +47,16 @@ class AfricasTalking::Base
 
   def api_error_messages(response)
     response.body
+  end
+
+  def format_mobile(mobile_number)
+    mobile_number.strip.gsub(/^0/,'+254')# if mobile_number.present?
+  end
+
+  def headers
+    {
+      'Accept' => "application/json", 'apiKey' => apikey
+    }
   end
 
 end
