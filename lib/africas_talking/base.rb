@@ -16,7 +16,12 @@ class AfricasTalking::Base
 
   def post(url, body=nil)
     response = Typhoeus.post("#{BASE_URI}#{url}", body: body, headers: headers)
-    # process_api_response(response)
+    process_api_response(response)
+    # JSON.parse(response.body)
+  end
+
+  def post_airtime(url, body=nil)
+    response = Typhoeus.post("#{BASE_URI}#{url}", body: body, headers: headers)
     JSON.parse(response.body)
   end
 

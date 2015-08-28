@@ -1,7 +1,4 @@
 class AfricasTalking::Airtime < AfricasTalking::Base
-	
-	MINIMUM = 10
-	MAXIMUM = 10000
 
 	#POST
 	#http://api.africastalking.com/version1/airtime/send
@@ -16,18 +13,15 @@ class AfricasTalking::Airtime < AfricasTalking::Base
 	###Recipients: Contains the a list of airtime recipients in JSON format. It should look like:
 	###############[{"phoneNumber":"+254700XXXYYY","amount":"KES X"},{}], required(*)
 	#[{mobile_number: 0710000009, airtime: 500},{mobile_number: 0710335602, airtime: 600}]
+	
 	def buy(recipients)
-		 
+		 response = post_airtime('/version1/airtime/send', {username: username, recipients: prepare_json(recipients)})
+		 parse_airtime_response(response)
 	end
 	alias_method :purchase, :buy
+	alias_method :send_airtime, :buy
 
-	def is_minimum?(amount)
-		amount <= MINIMUM
-	end
-
-	def is_maximum?(amount)
-		amount >= MAXIMUM
-	end
+private
 
 	def prepare_json(recipients)
 		prepared_recipients_array = Array.new
@@ -40,22 +34,23 @@ class AfricasTalking::Airtime < AfricasTalking::Base
 		prepared_recipients_array
 	end
 
-	def sendAirtime(recipients_)
-		url = 'https://api.africastalking.com/version1/airtime/send'
-		body = {username: username, recipients: prepare_json(recipients)}
-		response = post(url, body)
-		
-		if response.options[:response_code].eql?(200)
-			responses = JSON.parse(response)['responses']
-			
-			results = responses.collect { |result|
-				AfricasTalking::Reports::AirtimeResult.new(
-					result['status'], result['phoneNumber'],result['amount'],
-					result['requestId'], result['errorMessage'], result['discount'])}
-				
-			return results
-		elsif response.options[:response_code].eql?(200|201)
-			AfricasTalking::GatewayErrors.new(response['errorMessage'])
-		end
+	def parse_airtime_response(response)		
+		airtime_purchase_successful(response) if response.options[:response_code].eql?(200|201)
+		AfricasTalking::GatewayErrors.new(response['errorMessage']) unless response.options[:response_code].eql?(200|201)
 	end
+
+	def airtime_purchase_successful(response)
+		airtime_successful_results = Array.new
+		responses = JSON.parse(response)['responses']			
+		responses.each { |result| results << airtime_result(result)}
+		airtime_successful_results
+	end
+
+	def airtime_result(result)
+		AfricasTalking::Reports::AirtimeResult.new(
+			result['status'], result['phoneNumber'], result['amount'], result['requestId'], 
+			result['errorMessage'], result['discount']
+		)
+	end
+
 end
