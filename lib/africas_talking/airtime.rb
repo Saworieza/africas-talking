@@ -14,12 +14,11 @@ class AfricasTalking::Airtime < AfricasTalking::Base
 	###############[{"phoneNumber":"+254700XXXYYY","amount":"KES X"},{}], required(*)
 	#[{mobile_number: 0710000009, airtime: 500},{mobile_number: 0710335602, airtime: 600}]
 	
-	def buy(recipients)
-		 response = post_airtime('/version1/airtime/send', {username: username, recipients: prepare_json(recipients)})
-		 parse_airtime_response(response)
+	def buy_airtime(recipients)
+		airtime_json = {username: username, recipients: prepare_json(recipients)}
+		response = post_airtime('/version1/airtime/send', airtime_json)
+		parse_airtime_response(response)
 	end
-	alias_method :purchase, :buy
-	alias_method :send_airtime, :buy
 
 private
 
@@ -27,30 +26,30 @@ private
 		prepared_recipients_array = Array.new
 		recipients.each do |recipient|
 			prepared_recipients_array << {
-				"phoneNumber" => format_mobile(recipient.fetch(:mobile_number, '0710')), 
-				"amount" => recipient.fetch(:airtime, 0.0)
-			}
+				"amount" => recipient.fetch(:airtime, 0.0),
+				"phoneNumber" => format_mobile(recipient.fetch(:mobile_number, '0710'))}
 		end
 		prepared_recipients_array
 	end
 
 	def parse_airtime_response(response)		
 		airtime_purchase_successful(response) if response.options[:response_code].eql?(200|201)
-		AfricasTalking::GatewayErrors.new(response['errorMessage']) unless response.options[:response_code].eql?(200|201)
+		airtime_purchase_failed(response) unless response.options[:response_code].eql?(200|201)
 	end
 
 	def airtime_purchase_successful(response)
 		airtime_successful_results = Array.new
-		responses = JSON.parse(response)['responses']			
-		responses.each { |result| results << airtime_result(result)}
+		responses = JSON.parse(response)['responses']		
+		responses.each do |result|
+			results << AfricasTalking::Reports::AirtimeResult.new(
+				result['status'], result['phoneNumber'], result['amount'], 
+				result['requestId'], result['errorMessage'], result['discount'])
+		end
 		airtime_successful_results
 	end
 
-	def airtime_result(result)
-		AfricasTalking::Reports::AirtimeResult.new(
-			result['status'], result['phoneNumber'], result['amount'], result['requestId'], 
-			result['errorMessage'], result['discount']
-		)
+	def airtime_purchase_failed(response)
+		AfricasTalking::GatewayErrors.new(response['errorMessage'])
 	end
 
 end
