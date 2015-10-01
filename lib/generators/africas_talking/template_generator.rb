@@ -7,7 +7,6 @@ module AfricasTalking
 			arguement :templates_path, type: :string,
 				default: "config/",
 				banner: "path to templates"
-
 			def copy_templates
 				copy_file "africas_talking_config.yml.erb", "#{templates_path}/africas_talking.yml"
 			end

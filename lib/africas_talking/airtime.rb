@@ -41,9 +41,17 @@ private
 		airtime_successful_results = Array.new
 		responses = JSON.parse(response)['responses']		
 		responses.each do |result|
-			results << AfricasTalking::Reports::AirtimeResult.new(
-				result['status'], result['phoneNumber'], result['amount'], 
-				result['requestId'], result['errorMessage'], result['discount'])
+			
+			airtime_result = {
+				status: result.fetch('status', ''), 
+				phoneNumber: result('phoneNumber', ''), 
+				amount: result.fetch('amount', ''), 
+				requestId: result.fetch('requestId', ''), 
+				errorMessage: result.fetch('errorMessage', ''), 
+				discount: result.fetch('discount', '')
+			}
+
+			airtime_successful_results << AfricasTalking::Reports::AirtimeResult.new(airtime_result)
 		end
 		airtime_successful_results
 	end
